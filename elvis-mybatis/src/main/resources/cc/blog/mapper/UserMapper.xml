@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cc.blog.mapper.UserMapper">
+    <resultMap id="userMap" type="SysUser">
+        <id property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userPassword" column="user_password"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="userInfo" column="user_info"/>
+        <result property="headImg" column="head_img" jdbcType="BLOB"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="userRoleMap" type="SysUser" extends="userMap">
+        <association property="role" columnPrefix="role_" resultMap="cc.blog.mapper.RoleMapper.roleMap"/>
+    </resultMap>
+
+    <!--<resultMap id="userRoleMap" type="SysUser" extends="userMap">
+        &lt;!&ndash; role属性 &ndash;&gt;
+        <result property="role.id" column="role_id"/>
+        <result property="role.roleName" column="role_name"/>
+        <result property="role.enabled" column="enabled"/>
+        <result property="role.createBy" column="create_by"/>
+        <result property="role.createTime" column="create_time"/>
+    </resultMap>-->
+
+    <select id="selectById" resultMap="userMap" parameterType="java.lang.Long">
+        SELECT * FROM sys_user WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultType="SysUser">
+        SELECT * FROM sys_user
+    </select>
+
+    <insert id="insert" parameterType="SysUser">
+        INSERT INTO sys_user(
+            id,user_name,user_password,user_email,user_info,head_img,create_time)
+        VALUES (
+                #{id},#{userName},#{userPassword},#{userEmail},
+                #{userInfo},#{headImg,jdbcType=BLOB},#{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <insert id="insertForKey" parameterType="SysUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_user(
+        user_name,user_password,user_email,user_info,head_img,create_time)
+        VALUES (
+        #{userName},#{userPassword},#{userEmail},
+        #{userInfo},#{headImg,jdbcType=BLOB},#{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <!-- MySQL -->
+    <insert id="insertBySelectKey" parameterType="SysUser">
+        INSERT INTO sys_user(
+        user_name,user_password,user_email,user_info,head_img,create_time)
+        VALUES (
+        #{userName},#{userPassword},#{userEmail},
+        #{userInfo},#{headImg,jdbcType=BLOB},#{createTime,jdbcType=TIMESTAMP}
+        )
+        <selectKey keyColumn="id" resultType="long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <!-- Oracle -->
+    <!--<insert id="insertBySelectKey" parameterType="SysUser">-->
+        <!--<selectKey keyColumn="id" resultType="long" keyProperty="id" order="BEFORE">-->
+            <!--SELECT SEQ_ID.nextval FROM dual-->
+        <!--</selectKey>-->
+        <!--INSERT INTO sys_user(-->
+        <!--id,user_name,user_password,user_email,user_info,head_img,create_time)-->
+        <!--VALUES (-->
+        <!--#{id},#{userName},#{userPassword},#{userEmail},-->
+        <!--#{userInfo},#{headImg,jdbcType=BLOB},#{createTime,jdbcType=TIMESTAMP}-->
+        <!--)-->
+    <!--</insert>-->
+
+    <update id="updateById">
+        UPDATE sys_user
+        SET user_name = #{userName},
+            user_password = #{userPassword},
+            user_email = #{userEmail},
+            user_info = #{userInfo},
+            head_img = #{headImg},
+            create_time = #{createTime}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM sys_user WHERE id = #{id}
+    </delete>
+
+    <select id="selectByUser" resultMap="userMap">
+        SELECT * FROM sys_user
+        <!--WHERE 1 = 1
+        <if test="userName != null and userName != ''">
+            AND user_name LIKE concat('%', #{userName},'%')
+        </if>
+        <if test="userEmail != null and userEmail != ''">
+            AND user_email = #{userEmail}
+        </if>-->
+        <where>
+            <if test="userName != null and userName != ''">
+                <bind name="userNameLike" value="'%' + userName + '%'"/>
+                <!--AND user_name LIKE concat('%', #{userName},'%') -->
+               AND user_name LIKE #{userNameLike}
+           </if>
+           <if test="userEmail != null and userEmail != ''">
+               AND user_email = #{userEmail}
+           </if>
+       </where>
+   </select>
+
+   <update id="updateByldSelective">
+       UPDATE sys_user
+       SET
+           <if test="userName != null and userName != ''">
+               user_name = #{userName},
+           </if>
+       id = #{id}
+       WHERE id = #{id}
+   </update>
+
+   <select id="selectByIdList" resultType="SysUser">
+       SELECT * FROM sys_user
+       WHERE id IN
+       <foreach collection="list" open="(" close=")" separator=","
+                item="id" index="i">
+           #{id}
+       </foreach>
+   </select>
+
+   <select id="selectByIdArray" resultType="SysUser">
+       SELECT * FROM sys_user
+       WHERE id IN
+       <foreach collection="array" open="(" close=")" separator=","
+                item="id" index="i">
+           #{id}
+       </foreach>
+   </select>
+
+
+    <insert id="insertList" useGeneratedKeys="true" keyProperty="id">
+       INSERT INTO sys_user(
+           user_name, user_password, user_email,
+           user_info, head_img, create_time)
+       VALUES
+       <foreach collection="list" item="user" separator=", ">
+           (
+           #{user.userName},#{user.userPassword},#{user.userEmail},
+           #{user.userInfo},#{user.headImg,jdbcType=BLOB},
+           #{user.createTime,jdbcType=TIMESTAMP}
+           )
+       </foreach>
+    </insert>
+
+   <update id="updateByMap">
+       update sys_user
+       SET
+           <foreach collection="_parameter" item="val" index="key" separator=", ">
+               ${key} = #{val}
+           </foreach>
+       WHERE id = #{id}
+   </update>
+
+    <select id="selectUserAndRoleById" resultType="SysUser">
+        SELECT
+            u.id,
+            u.user_name,
+            u.user_email,
+            u.user_info,
+            u.head_img,
+            u.create_time,
+            r.id AS "role.id",
+            r.role_name AS "role.roleName",
+            r.enabled AS "role.enabled",
+            r.create_by AS "role.createBy",
+            r.create_time AS "role.createTime"
+        FROM sys_user u
+        INNER JOIN sys_user_role ur ON u.id = ur.user_id
+        INNER JOIN sys_role r ON ur.role_id = r.id
+        WHERE u.id = #{id}
+    </select>
+
+    <select id="selectUserAndRoleByIdForResultMap" resultMap="userRoleMap">
+        SELECT
+        u.id,
+        u.user_name,
+        u.user_email,
+        u.user_info,
+        u.head_img,
+        u.create_time,
+        r.id AS role_id,
+        r.role_name AS role_role_name,
+        r.enabled AS role_enabled,
+        r.create_by AS role_create_by,
+        r.create_time AS role_create_time
+        FROM sys_user u
+        INNER JOIN sys_user_role ur ON u.id = ur.user_id
+        INNER JOIN sys_role r ON ur.role_id = r.id
+        WHERE u.id = #{id}
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
