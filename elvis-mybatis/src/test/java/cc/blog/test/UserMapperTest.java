@@ -22,6 +22,48 @@ import java.util.List;
 public class UserMapperTest extends BaseMapperTest{
 
     @Test
+    public void testSelectAllUserAndRolesSelect() {
+
+        SysUser user1 = null;
+        SysUser user2 = null;
+        SysUser user3 = null;
+
+        try(SqlSession sqlSession = getSqlSession()) {
+
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+            user1 = userMapper.selectAllUserAndRolesSelect(1L);
+
+//            System.out.println(user.getRoles().get(0).getRoleName());
+//            System.out.println(user.getRoles().get(0).getPrivilegeList().get(0).getPrivilegeName());
+            user2 = userMapper.selectAllUserAndRolesSelect(1L);
+            System.out.println("同一个SqlSession：" + (user1 == user2));
+        }
+
+        try(SqlSession sqlSession = getSqlSession()) {
+
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+
+            user3 = userMapper.selectAllUserAndRolesSelect(1L);
+
+            System.out.println("不同一个SqlSession：" + (user1 == user3));
+        }
+    }
+
+    @Test
+    public void testSelectAllUserAndRoles() {
+
+        try(SqlSession sqlSession = getSqlSession()) {
+
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+
+
+            List<SysUser> users = userMapper.selectAllUserAndRoles();
+
+            printUserList(users);
+        }
+    }
+
+    @Test
     public void selectselectUserAndRoleByIdForResultMap() {
 
         try(SqlSession sqlSession = getSqlSession()) {
@@ -29,7 +71,7 @@ public class UserMapperTest extends BaseMapperTest{
             UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
 
 
-            List<SysUser> users = userMapper.selectUserAndRoleByIdForResultMap(1L);
+            List<SysUser> users = userMapper.selectUserAndRoleByIdForResultMap(1L, "xxxx");
 
             printUserList(users);
         }

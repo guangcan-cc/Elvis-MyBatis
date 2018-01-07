@@ -1,9 +1,11 @@
 package cc.blog.model;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
-public class SysUser {
+public class SysUser implements Serializable{
 
     private Long id;
     private String userName;
@@ -13,7 +15,7 @@ public class SysUser {
     private byte[] headImg;
     private Date createTime;
 
-    private SysRole role;
+    private List<SysRole> roles;
 
     public Long getId() {
         return id;
@@ -71,12 +73,12 @@ public class SysUser {
         this.createTime = createTime;
     }
 
-    public SysRole getRole() {
-        return role;
+    public List<SysRole> getRoles() {
+        return roles;
     }
 
-    public void setRole(SysRole role) {
-        this.role = role;
+    public void setRoles(List<SysRole> roles) {
+        this.roles = roles;
     }
 
     @Override
@@ -89,7 +91,7 @@ public class SysUser {
                 ", userInfo='" + userInfo + '\'' +
                 ", headImg=" + Arrays.toString(headImg) +
                 ", createTime=" + createTime +
-                ", role=" + role +
+                ", roles=" + roles +
                 '}';
     }
 }

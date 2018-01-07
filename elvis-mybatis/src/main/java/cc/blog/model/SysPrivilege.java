@@ -1,9 +1,11 @@
 package cc.blog.model;
 
-public class SysPrivilege {
+import java.io.Serializable;
+
+public class SysPrivilege implements Serializable{
     private Long id;
     private String privilegeName;
-    private String privilegeCode;
+    private String privilegeUrl;
 
     public Long getId() {
         return id;
@@ -21,11 +23,11 @@ public class SysPrivilege {
         this.privilegeName = privilegeName;
     }
 
-    public String getPrivilegeCode() {
-        return privilegeCode;
+    public String getPrivilegeUrl() {
+        return privilegeUrl;
     }
 
-    public void setPrivilegeCode(String privilegeCode) {
-        this.privilegeCode = privilegeCode;
+    public void setPrivilegeUrl(String privilegeUrl) {
+        this.privilegeUrl = privilegeUrl;
     }
 }

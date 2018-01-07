@@ -34,6 +34,8 @@ public interface RoleMapper {
     @SelectKey(statement = "SELECT LAST_INSERT_ID()", keyProperty = "id", before = false, resultType = Long.class)
     int insertForSelectKey(SysRole role);
 
+    List<SysRole> selectRoleByUserId(@Param("userId") Long userId);
+
 }
 
 

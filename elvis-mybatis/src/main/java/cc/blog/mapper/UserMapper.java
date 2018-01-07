@@ -1,6 +1,7 @@
 package cc.blog.mapper;
 
 import cc.blog.model.SysUser;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -37,4 +38,10 @@ public interface UserMapper {
     List<SysUser> selectUserAndRoleById(Long id);
 
     List<SysUser> selectUserAndRoleByIdForResultMap(Long id);
+
+    List<SysUser> selectUserAndRoleByIdForResultMap(@Param("id") Long id, String userName);
+
+    List<SysUser> selectAllUserAndRoles();
+
+    SysUser selectAllUserAndRolesSelect(@Param("id") Long id);
 }

@@ -1,8 +1,10 @@
 package cc.blog.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-public class SysRole {
+public class SysRole implements Serializable{
 
     private Long id;
     private String roleName;
@@ -10,7 +12,7 @@ public class SysRole {
     private Long createBy;
     private Date createTime;
 
-    private SysUser user;
+    private List<SysPrivilege> privilegeList;
 
     public Long getId() {
         return id;
@@ -52,23 +54,11 @@ public class SysRole {
         this.createTime = createTime;
     }
 
-    public SysUser getUser() {
-        return user;
+    public List<SysPrivilege> getPrivilegeList() {
+        return privilegeList;
     }
 
-    public void setUser(SysUser user) {
-        this.user = user;
-    }
-
-    @Override
-    public String toString() {
-        return "SysRole{" +
-                "id=" + id +
-                ", roleName='" + roleName + '\'' +
-                ", enabled=" + enabled +
-                ", createBy=" + createBy +
-                ", createTime=" + createTime +
-                ", user=" + user +
-                '}';
+    public void setPrivilegeList(List<SysPrivilege> privilegeList) {
+        this.privilegeList = privilegeList;
     }
 }

@@ -6,6 +6,8 @@
         <setting name="logImpl" value="LOG4J"/>
         <!-- 使用驼峰命名规则 -->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
+        
+        <setting name="cacheEnabled" value="true"/>
     </settings>
 
     <typeAliases>

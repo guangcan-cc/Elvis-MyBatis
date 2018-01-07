@@ -2,6 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="cc.blog.mapper.UserMapper">
+
+    <cache/>
+
     <resultMap id="userMap" type="SysUser">
         <id property="id" column="id"/>
         <result property="userName" column="user_name"/>
@@ -15,7 +18,6 @@
     <resultMap id="userRoleMap" type="SysUser" extends="userMap">
         <association property="role" columnPrefix="role_" resultMap="cc.blog.mapper.RoleMapper.roleMap"/>
     </resultMap>
-
     <!--<resultMap id="userRoleMap" type="SysUser" extends="userMap">
         &lt;!&ndash; role属性 &ndash;&gt;
         <result property="role.id" column="role_id"/>
@@ -25,6 +27,24 @@
         <result property="role.createTime" column="create_time"/>
     </resultMap>-->
 
+    <resultMap id="userRoleListMap" extends="userMap" type="SysUser">
+        <collection property="roles" columnPrefix="role_" resultMap="cc.blog.mapper.RoleMapper.rolePrivilegeListMap"/>
+    </resultMap>
+    
+    <resultMap id="userRoleListMapSelect" type="SysUser" extends="userMap">
+        <collection property="roles"
+                    fetchType="eager"
+                    select="cc.blog.mapper.RoleMapper.selectRoleByUserId"
+                    column="{userId=id}"/>
+    </resultMap>
+    
+    <select id="selectAllUserAndRolesSelect" resultMap="userRoleListMapSelect">
+        SELECT
+            *
+        FROM sys_user
+        WHERE id = #{id}
+    </select>
+    
     <select id="selectById" resultMap="userMap" parameterType="java.lang.Long">
         SELECT * FROM sys_user WHERE id = #{id}
     </select>
@@ -186,21 +206,44 @@
 
     <select id="selectUserAndRoleByIdForResultMap" resultMap="userRoleMap">
         SELECT
-        u.id,
-        u.user_name,
-        u.user_email,
-        u.user_info,
-        u.head_img,
-        u.create_time,
-        r.id AS role_id,
-        r.role_name AS role_role_name,
-        r.enabled AS role_enabled,
-        r.create_by AS role_create_by,
-        r.create_time AS role_create_time
+            u.id,
+            u.user_name,
+            u.user_email,
+            u.user_info,
+            u.head_img,
+            u.create_time,
+            r.id AS role_id,
+            r.role_name AS role_role_name,
+            r.enabled AS role_enabled,
+            r.create_by AS role_create_by,
+            r.create_time AS role_create_time
         FROM sys_user u
         INNER JOIN sys_user_role ur ON u.id = ur.user_id
         INNER JOIN sys_role r ON ur.role_id = r.id
         WHERE u.id = #{id}
+    </select>
+
+    <select id="selectAllUserAndRoles" resultMap="userRoleListMap">
+        SELECT
+            u.id,
+            u.user_name,
+            u.user_email,
+            u.user_info,
+            u.head_img,
+            u.create_time,
+            r.id AS role_id,
+            r.role_name AS role_role_name,
+            r.enabled AS role_enabled,
+            r.create_by AS role_create_by,
+            r.create_time AS role_create_time,
+            p.id AS role_privilege_id,
+            p.privilege_name AS role_privilege_privilege_name,
+            p.privilege_url AS role_privilege_privilege_url
+        FROM sys_user u
+        INNER JOIN sys_user_role ur ON u.id = ur.user_id
+        INNER JOIN sys_role r ON ur.role_id = r.id
+        INNER JOIN sys_role_privilege rp ON rp.role_id = r.id
+        INNER JOIN sys_privilege p ON p.id = rp.privilege_id
     </select>
 
 </mapper>
