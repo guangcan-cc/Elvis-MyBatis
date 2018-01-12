@@ -27,6 +27,7 @@ public class UserMapperTest extends BaseMapperTest{
         SysUser user1 = null;
         SysUser user2 = null;
         SysUser user3 = null;
+        SysUser user4 = null;
 
         try(SqlSession sqlSession = getSqlSession()) {
 
@@ -45,7 +46,10 @@ public class UserMapperTest extends BaseMapperTest{
 
             user3 = userMapper.selectAllUserAndRolesSelect(1L);
 
+            user4 = userMapper.selectAllUserAndRolesSelect(1L);
+
             System.out.println("不同一个SqlSession：" + (user1 == user3));
+            System.out.println(user3 == user4);
         }
     }
 

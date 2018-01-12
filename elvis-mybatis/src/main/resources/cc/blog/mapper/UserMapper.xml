@@ -3,7 +3,8 @@
 
 <mapper namespace="cc.blog.mapper.UserMapper">
 
-    <cache/>
+    <cache
+        type="org.mybatis.caches.redis.RedisCache"/>
 
     <resultMap id="userMap" type="SysUser">
         <id property="id" column="id"/>

@@ -1,12 +1,15 @@
 package cc.blog.mapper;
 
 import cc.blog.model.SysUser;
+import org.apache.ibatis.annotations.CacheNamespace;
+import org.apache.ibatis.annotations.CacheNamespaceRef;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
 
+@CacheNamespaceRef(UserMapper.class)
 public interface UserMapper {
 
     SysUser selectById(Long id);
